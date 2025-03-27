@@ -1,7 +1,8 @@
 """
 darca-llm
 
-Modular, backend-agnostic interface for interacting with large language models (LLMs).
+Modular, backend-agnostic interface for interacting with large language
+models (LLMs).
 Default backend: OpenAI
 
 Exports:
@@ -14,11 +15,11 @@ Exports:
 from .llm import (
     AIClient,
     BaseLLMClient,
-    OpenAIClient,
-    LLMException,
     LLMAPIKeyMissing,
-    LLMResponseError,
     LLMContentFormatError,
+    LLMException,
+    LLMResponseError,
+    OpenAIClient,
 )
 
 __all__ = [

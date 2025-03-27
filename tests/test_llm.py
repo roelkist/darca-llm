@@ -1,34 +1,40 @@
 # tests/test_llm.py
 
-import pytest
+from unittest.mock import MagicMock, patch
+
 import openai  # ✅ Fix: import openai so we can subclass OpenAIError
-from unittest.mock import patch, MagicMock
+import pytest
 
 from darca_llm import (
     AIClient,
-    OpenAIClient,
+    BaseLLMClient,
     LLMAPIKeyMissing,
     LLMContentFormatError,
-    LLMResponseError,
     LLMException,
-    BaseLLMClient,
+    LLMResponseError,
+    OpenAIClient,
 )
+
 
 def test_base_llm_client_get_raw_response_executes_base_pass():
     """
-    Ensure BaseLLMClient.get_raw_response() is executed via super() to hit the abstract pass line.
+    Ensure BaseLLMClient.get_raw_response() is executed via super() to hit
+    the abstract pass line.
     """
 
     class DummyClient(BaseLLMClient):
         def get_raw_response(self, *args, **kwargs):
-            return super().get_raw_response(*args, **kwargs)  # 👈 Will hit the base `pass`
+            return super().get_raw_response(
+                *args, **kwargs
+            )  # 👈 Will hit the base `pass`
 
     DummyClient.__abstractmethods__ = set()
     client = DummyClient()
 
     result = client.get_raw_response("sys", "user")
-    assert result is None  # ✅ NotImplementedError is not raised because method is pass
-
+    assert (
+        result is None
+    )  # ✅ NotImplementedError is not raised because method is pass
 
 
 def test_ai_client_default_backend(openai_key):
@@ -63,13 +69,19 @@ def test_openai_get_raw_response_openai_error(openai_key):
     class FakeOpenAIError(openai.OpenAIError):
         pass
 
-    with patch("openai.chat.completions.create", side_effect=FakeOpenAIError("Simulated failure")):
+    with patch(
+        "openai.chat.completions.create",
+        side_effect=FakeOpenAIError("Simulated failure"),
+    ):
         client = OpenAIClient()
         with pytest.raises(LLMResponseError) as e:
             client.get_raw_response("sys", "user")
-        assert e.value.error_code == "LLM_API_REQUEST_FAILED"  # ✅ Assert specific code
-        assert "returned an error" in e.value.message.lower()  # ✅ Flexible string check
-
+        assert (
+            e.value.error_code == "LLM_API_REQUEST_FAILED"
+        )  # ✅ Assert specific code
+        assert (
+            "returned an error" in e.value.message.lower()
+        )  # ✅ Flexible string check
 
 
 def test_openai_get_raw_response_unexpected_error(openai_key):
@@ -90,7 +102,9 @@ def test_file_content_response_valid(openai_key):
 
     with patch("openai.chat.completions.create", return_value=mock_response):
         client = OpenAIClient()
-        file_data = 'name: test'  # ✅ Avoid any code block prefix to ensure single-block
+        file_data = (
+            "name: test"  # ✅ Avoid block prefix,to ensure single-block
+        )
         result = client.get_file_content_response("sys", file_data)
         assert "File processed" in result
 

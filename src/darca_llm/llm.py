@@ -1,13 +1,13 @@
 import os
 import re
 from abc import ABC, abstractmethod
+
 import openai
-
-from darca_log_facility.logger import DarcaLogger
 from darca_exception.exception import DarcaException
-
+from darca_log_facility.logger import DarcaLogger
 
 # === Custom Exceptions ===
+
 
 class LLMException(DarcaException):
     """Base class for all darca-llm exceptions."""
@@ -27,20 +27,32 @@ class LLMContentFormatError(LLMException):
 
 # === Abstract Base Client ===
 
+
 class BaseLLMClient(ABC):
     """
-    Abstract base class for LLM backends. Provides shared logic for file content processing.
+    Abstract base class for LLM backends. Provides shared logic for file
+    content processing.
     """
 
     @abstractmethod
-    def get_raw_response(self, system: str, user: str, llm: str = "gpt-4", temperature: float = 1.0) -> str:
+    def get_raw_response(
+        self,
+        system: str,
+        user: str,
+        llm: str = "gpt-4",
+        temperature: float = 1.0,
+    ) -> str:
         """
         Send a raw prompt (system + user) to the LLM and return the response.
         """
         pass
 
     def get_file_content_response(
-        self, system: str, file_content: str, llm: str = "gpt-4", temperature: float = 1.0
+        self,
+        system: str,
+        file_content: str,
+        llm: str = "gpt-4",
+        temperature: float = 1.0,
     ) -> str:
         """
         Process a prompt that includes the content of a single file.
@@ -50,7 +62,7 @@ class BaseLLMClient(ABC):
             raise LLMContentFormatError(
                 message="Expected a single file block, but found multiple.",
                 error_code="LLM_CONTENT_MULTIBLOCK",
-                metadata={"content_preview": file_content[:100]}
+                metadata={"content_preview": file_content[:100]},
             )
         cleaned = self._strip_markdown_prefix(file_content)
         return self.get_raw_response(system, cleaned, llm, temperature)
@@ -59,19 +71,20 @@ class BaseLLMClient(ABC):
         """
         Strip markdown/code block prefix such as '''yaml or ```python.
         """
-        pattern = r'^(?:(\"\"\"|```)[a-zA-Z]+\s*)'
-        return re.sub(pattern, '', text.strip())
+        pattern = r"^(?:(\"\"\"|```)[a-zA-Z]+\s*)"
+        return re.sub(pattern, "", text.strip())
 
     def _has_single_block(self, text: str) -> bool:
         """
         Ensure content includes only a single markdown/code block.
         """
         triple_quote_blocks = len(re.findall(r'"""[a-zA-Z]*', text))
-        triple_backtick_blocks = len(re.findall(r'```[a-zA-Z]*', text))
+        triple_backtick_blocks = len(re.findall(r"```[a-zA-Z]*", text))
         return (triple_quote_blocks + triple_backtick_blocks) <= 1
 
 
 # === OpenAI Implementation ===
+
 
 class OpenAIClient(BaseLLMClient):
     """
@@ -85,26 +98,28 @@ class OpenAIClient(BaseLLMClient):
             raise LLMAPIKeyMissing(
                 message="OPENAI_API_KEY environment variable is not set.",
                 error_code="LLM_API_KEY_MISSING",
-                metadata={"provider": "openai"}
+                metadata={"provider": "openai"},
             )
         openai.api_key = api_key
 
     def get_raw_response(
-        self, system: str, user: str, llm: str = "gpt-4", temperature: float = 1.0
+        self,
+        system: str,
+        user: str,
+        llm: str = "gpt-4",
+        temperature: float = 1.0,
     ) -> str:
         """
         Send system + user prompt to OpenAI and return the chat response.
         """
         messages = [
             {"role": "system", "content": system},
-            {"role": "user", "content": user}
+            {"role": "user", "content": user},
         ]
         try:
             self.logger.debug("Sending prompt to OpenAI", extra={"model": llm})
             response = openai.chat.completions.create(
-                model=llm,
-                messages=messages,
-                temperature=temperature
+                model=llm, messages=messages, temperature=temperature
             )
             content = response.choices[0].message.content
             self.logger.debug("Received response from OpenAI")
@@ -118,28 +133,27 @@ class OpenAIClient(BaseLLMClient):
                     "model": llm,
                     "temperature": temperature,
                     "prompt_preview": user[:100],
-                    "system_prompt_preview": system[:100]
+                    "system_prompt_preview": system[:100],
                 },
-                cause=oe
+                cause=oe,
             )
 
         except Exception as e:
             raise LLMResponseError(
                 message="Unexpected failure during OpenAI response parsing.",
                 error_code="LLM_RESPONSE_PARSE_ERROR",
-                metadata={
-                    "model": llm,
-                    "temperature": temperature
-                },
-                cause=e
+                metadata={"model": llm, "temperature": temperature},
+                cause=e,
             )
 
 
 # === AIClient Wrapper ===
 
+
 class AIClient:
     """
-    A unified client for interacting with LLMs using the darca pluggable backend system.
+    A unified client for interacting with LLMs using the darca pluggable
+    backend system.
     Defaults to OpenAI.
     """
 
@@ -153,7 +167,7 @@ class AIClient:
             raise LLMException(
                 message=f"LLM backend '{backend}' is not supported.",
                 error_code="LLM_UNSUPPORTED_BACKEND",
-                metadata={"requested_backend": backend}
+                metadata={"requested_backend": backend},
             )
 
     def __getattr__(self, name):
