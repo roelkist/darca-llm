@@ -36,7 +36,7 @@ Features
 - 🧱 Extensible abstract interface (`BaseLLMClient`) for new providers
 - 🧪 Full pytest support with 100% coverage
 - 📦 Rich exception handling with structured `DarcaException`
-- 📋 Markdown-aware content formatting
+- 📋 Markdown-aware content formatting using `_strip_markdown_prefix`
 - 🧠 Logging support via `darca-log-facility`
 
 ---
@@ -77,6 +77,53 @@ Quickstart
 
 ---
 
+Using `get_file_content_response`
+----------------------------------
+
+The `get_file_content_response()` method allows for structured file content prompting with LLMs.
+
+Example:
+
+.. code-block:: python
+
+    from darca_llm import AIClient
+
+    client = AIClient()
+
+    user_prompt = "Provide the content of a simple Python file."
+
+    result = client.get_file_content_response(
+        system="Explain the code.",
+        user=user_prompt
+    )
+    print(result)
+
+This method ensures that only a single code block is returned and properly stripped of formatting using `_strip_markdown_prefix()`.
+
+---
+
+Error Handling
+--------------
+
+All exceptions are subclasses of `DarcaException` and include:
+
+- `LLMException`: Base for all LLM-specific errors
+- `LLMAPIKeyMissing`: Raised when the API key is missing for the selected backend
+- `LLMContentFormatError`: Raised when:
+  - Multiple blocks are detected within the response
+  - The response cannot be properly stripped of markdown/code block formatting
+- `LLMResponseError`: Raised when the LLM provider returns an error or response parsing fails
+
+All exceptions include:
+
+- `error_code`
+- `message`
+- Optional `metadata`
+- Optional `cause`
+- Full stack trace logging
+
+---
+
 Documentation
 -------------
 
@@ -92,4 +139,7 @@ Open the HTML documentation at:
 
     docs/build/html/index.html
 
+For detailed usage, refer to the `usage.rst` documentation.
+
 ---
+

@@ -97,24 +97,70 @@ def test_openai_get_raw_response_unexpected_error(openai_key):
 
 
 def test_file_content_response_valid(openai_key):
+    """
+    Test valid response from get_file_content_response with a single valid block.
+    """
     mock_response = MagicMock()
-    mock_response.choices[0].message.content = "File processed"
+    mock_response.choices[0].message.content = "```python\nprint('Hello World')\n```"
 
     with patch("openai.chat.completions.create", return_value=mock_response):
         client = OpenAIClient()
-        file_data = (
-            "name: test"  # ✅ Avoid block prefix,to ensure single-block
-        )
-        result = client.get_file_content_response("sys", file_data)
-        assert "File processed" in result
+        user_prompt = "Provide the content of a simple Python file."
+        
+        # Calling the refactored method
+        result = client.get_file_content_response("sys", user_prompt)
+        
+        assert result == "print('Hello World')"  # Ensure markdown prefix is stripped
 
 
 def test_file_content_response_invalid(openai_key):
+    """
+    Test invalid response from get_file_content_response when multiple blocks are returned.
+    """
+    mock_response = MagicMock()
+    mock_response.choices[0].message.content = (
+        "```python\nprint('Hello World')\n```\n\n"
+        "```python\nprint('Goodbye World')\n```"
+    )
+
+    with patch("openai.chat.completions.create", return_value=mock_response):
+        client = OpenAIClient()
+        user_prompt = "Provide the content of two Python files."
+        
+        # Ensure that an exception is raised for multiple blocks
+        with pytest.raises(LLMContentFormatError) as e:
+            client.get_file_content_response("sys", user_prompt)
+        
+        assert "multiple" in str(e.value).lower()
+
+def test_strip_markdown_prefix_no_code_block(openai_key):
+    """
+    Test _strip_markdown_prefix returns original text if no code block pattern is found.
+    """
     client = OpenAIClient()
-    bad_file = '"""yaml\nkey: value\n"""\n"""yaml\nanother: block\n"""'
-    with pytest.raises(LLMContentFormatError) as e:
-        client.get_file_content_response("sys", bad_file)
-    assert "multiple" in str(e.value).lower()
+    text_without_code_block = "This is a plain text without any code block."
+
+    result = client._strip_markdown_prefix(text_without_code_block)
+
+    # It should return the original text since no code block markers were detected.
+    assert result == text_without_code_block
+
+def test_file_content_response_empty_after_stripping(openai_key):
+    """
+    Test get_file_content_response raises LLMContentFormatError if stripping results in empty content.
+    """
+    mock_response = MagicMock()
+    # The block content is empty or just whitespace which should trigger the exception.
+    mock_response.choices[0].message.content = "```python\n\n```"
+
+    with patch("openai.chat.completions.create", return_value=mock_response):
+        client = OpenAIClient()
+        user_prompt = "Provide the content of an empty Python file."
+
+        with pytest.raises(LLMContentFormatError) as e:
+            client.get_file_content_response("sys", user_prompt)
+        
+        assert "stripped" in str(e.value).lower()
 
 
 def test_delegation_via_getattr(openai_key):

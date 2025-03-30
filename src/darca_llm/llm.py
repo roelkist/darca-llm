@@ -50,40 +50,60 @@ class BaseLLMClient(ABC):
     def get_file_content_response(
         self,
         system: str,
-        file_content: str,
+        user: str,
         llm: str = "gpt-4",
         temperature: float = 1.0,
     ) -> str:
         """
-        Process a prompt that includes the content of a single file.
-        Cleans markdown/code formatting and ensures only one block is present.
+        Process a prompt to return the content of a single file.
+        This method sends the prompt to the LLM, verifies the response contains
+        a single code block,
+        and strips any markdown or code formatting prefixes.
         """
-        if not self._has_single_block(file_content):
+        response = self.get_raw_response(system, user, llm, temperature)
+
+        if not self._has_single_block(response):
             raise LLMContentFormatError(
-                message="Expected a single file block, but found multiple.",
+                message=(
+                    "Expected a single file block in the response,"
+                    " but found multiple."
+                ),
                 error_code="LLM_CONTENT_MULTIBLOCK",
-                metadata={"content_preview": file_content[:100]},
+                metadata={"response_preview": response[:100]},
             )
-        cleaned = self._strip_markdown_prefix(file_content)
-        return self.get_raw_response(system, cleaned, llm, temperature)
-    
-    #### VERKEERD GEIMPLEMTNEER. MOET RESPONSE FILTERE. NIET FILE MEEGEVEN ....!!!!!! FIXME
-    
+
+        cleaned_response = self._strip_markdown_prefix(response)
+
+        if not cleaned_response.strip():
+            raise LLMContentFormatError(
+                message=(
+                    "The response could not be properly stripped of "
+                    "markdown/code block formatting."
+                ),
+                error_code="LLM_CONTENT_STRIP_ERROR",
+                metadata={"response_preview": response[:100]},
+            )
+
+        return cleaned_response
 
     def _strip_markdown_prefix(self, text: str) -> str:
         """
-        Strip markdown/code block prefix such as '''yaml or ```python.
+        Strip markdown/code block prefix and suffix such as ```python ... ```.
         """
-        pattern = r"^(?:(\"\"\"|```)[a-zA-Z]+\s*)"
-        return re.sub(pattern, "", text.strip())
+        pattern = r"^```(?:[\w+-]*)\n([\s\S]*?)\n```$"
+        match = re.match(pattern, text.strip())
+        
+        if match:
+            return match.group(1).strip()  # Return only the content within the block
+        return text.strip()  # Return the original text if it doesn't match the pattern
 
     def _has_single_block(self, text: str) -> bool:
         """
         Ensure content includes only a single markdown/code block.
         """
-        triple_quote_blocks = len(re.findall(r'"""[a-zA-Z]*', text))
-        triple_backtick_blocks = len(re.findall(r"```[a-zA-Z]*", text))
-        return (triple_quote_blocks + triple_backtick_blocks) <= 1
+        # Match blocks that start and end with ```
+        blocks = re.findall(r"```(?:[\w+-]*)\n[\s\S]*?\n```", text)
+        return len(blocks) == 1
 
 
 # === OpenAI Implementation ===
