@@ -82,8 +82,10 @@ class BaseLLMClient(ABC):
         :type temperature: float
         :return: The raw response text returned by the LLM.
         :rtype: str
-        :raises LLMResponseError: If the LLM request fails or returns an invalid response.
-        :raises LLMAPIKeyMissing: If the required API key is not set in the environment.
+        :raises LLMResponseError: If the LLM request fails or returns an
+                                  invalid response.
+        :raises LLMAPIKeyMissing: If the required API key is not set in
+                                  the environment.
         """
         pass
 
@@ -105,17 +107,20 @@ class BaseLLMClient(ABC):
 
         :param system: The system message for the LLM.
         :type system: str
-        :param user: The user query or request for the LLM, typically referencing a file content request.
+        :param user: The user query or request for the LLM, typically
+                     referencing a file content request.
         :type user: str
-        :param llm: The identifier for the LLM model to use (e.g., ``gpt-4``).
+        :param llm: The identifier for the LLM model to use
+                    (e.g., ``gpt-4``).
         :type llm: str
         :param temperature: The sampling temperature for the LLM, controlling
             creativity in the response.
         :type temperature: float
         :return: Cleaned-up text containing the single file content.
         :rtype: str
-        :raises LLMContentFormatError: If the response has multiple code blocks,
-            or if it cannot be properly stripped of Markdown/code formatting.
+        :raises LLMContentFormatError: If the response has multiple
+            code blocks, or if it cannot be properly stripped of
+            Markdown/code formatting.
         """
         response = self.get_raw_response(system, user, llm, temperature)
 
@@ -145,14 +150,18 @@ class BaseLLMClient(ABC):
 
     def _strip_markdown_prefix(self, text: str) -> str:
         """
-        Strip Markdown or code block prefix and suffix (e.g., `````python ... ```).
+        Strip Markdown or code block prefix and suffix
+        (e.g., `````python ... ```).
 
-        This method uses a regular expression to detect code blocks delimited by
-        triple backticks. If a match is found, it returns only the content within
+        This method uses a regular expression to detect code blocks
+        delimited by
+        triple backticks. If a match is found, it returns only the
+        content within
         the code block, otherwise returns the original text stripped of
         leading/trailing whitespace.
 
-        :param text: The text potentially containing Markdown or code block formatting.
+        :param text: The text potentially containing Markdown or code
+          block formatting.
         :type text: str
         :return: The stripped text without the code block delimiters.
         :rtype: str
@@ -172,9 +181,11 @@ class BaseLLMClient(ABC):
         """
         Check if the text contains exactly one Markdown/code block.
 
-        :param text: The text that may contain zero, one, or multiple code blocks.
+        :param text: The text that may contain zero, one, or multiple
+          code blocks.
         :type text: str
-        :return: True if there is exactly one code block in the text, False otherwise.
+        :return: True if there is exactly one code block in the text,
+          False otherwise.
         :rtype: bool
         """
         blocks = re.findall(r"```(?:[\w+-]*)\n[\s\S]*?\n```", text)
@@ -197,7 +208,8 @@ class OpenAIClient(BaseLLMClient):
         """
         Initialize the OpenAI client.
 
-        :raises LLMAPIKeyMissing: If the ``OPENAI_API_KEY`` environment variable is not set.
+        :raises LLMAPIKeyMissing: If the ``OPENAI_API_KEY`` environment
+          variable is not set.
         """
         self.logger = DarcaLogger("darca-llm").get_logger()
         api_key = os.getenv("OPENAI_API_KEY")
@@ -219,17 +231,21 @@ class OpenAIClient(BaseLLMClient):
         """
         Send a system and user prompt to OpenAI and return the chat response.
 
-        :param system: The system message providing context or instructions to the LLM.
+        :param system: The system message providing context or instructions
+          to the LLM.
         :type system: str
         :param user: The user message, typically containing the main query.
         :type user: str
-        :param llm: The identifier of the OpenAI model to use (e.g., ``gpt-4``).
+        :param llm: The identifier of the OpenAI model to
+          use (e.g., ``gpt-4``).
         :type llm: str
-        :param temperature: Sampling temperature for the request to control response randomness.
+        :param temperature: Sampling temperature for the request to control
+          response randomness.
         :type temperature: float
         :return: The text content of the LLM response.
         :rtype: str
-        :raises LLMResponseError: If the API request fails or the response cannot be parsed.
+        :raises LLMResponseError: If the API request fails or the response
+          cannot be parsed.
         """
         messages = [
             {"role": "system", "content": system},
@@ -282,7 +298,8 @@ class AIClient:
         """
         Initialize the AIClient with the given backend.
 
-        :param backend: The chosen LLM backend. Currently only ``openai`` is supported.
+        :param backend: The chosen LLM backend. Currently only ``openai``
+          is supported.
         :type backend: str
         :raises LLMException: If the requested backend is not supported.
         """
@@ -299,8 +316,8 @@ class AIClient:
         """
         Delegate attribute or method calls to the selected backend client.
 
-        If this client does not have the attribute or method, it is fetched from
-        the underlying backend (e.g., :class:`OpenAIClient`).
+        If this client does not have the attribute or method, it is fetched
+        from the underlying backend (e.g., :class:`OpenAIClient`).
 
         :param name: The name of the attribute or method to be accessed.
         :type name: str

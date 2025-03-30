@@ -98,7 +98,8 @@ def test_openai_get_raw_response_unexpected_error(openai_key):
 
 def test_file_content_response_valid(openai_key):
     """
-    Test valid response from get_file_content_response with a single valid block.
+    Test valid response from get_file_content_response with a single
+    valid block.
     """
     mock_response = MagicMock()
     mock_response.choices[0].message.content = (
@@ -119,7 +120,8 @@ def test_file_content_response_valid(openai_key):
 
 def test_file_content_response_invalid(openai_key):
     """
-    Test invalid response from get_file_content_response when multiple blocks are returned.
+    Test invalid response from get_file_content_response when multiple blocks
+    are returned.
     """
     mock_response = MagicMock()
     mock_response.choices[0].message.content = (
@@ -140,23 +142,27 @@ def test_file_content_response_invalid(openai_key):
 
 def test_strip_markdown_prefix_no_code_block(openai_key):
     """
-    Test _strip_markdown_prefix returns original text if no code block pattern is found.
+    Test _strip_markdown_prefix returns original text if no code block pattern
+    is found.
     """
     client = OpenAIClient()
     text_without_code_block = "This is a plain text without any code block."
 
     result = client._strip_markdown_prefix(text_without_code_block)
 
-    # It should return the original text since no code block markers were detected.
+    # It should return the original text since no code block markers
+    # were detected.
     assert result == text_without_code_block
 
 
 def test_file_content_response_empty_after_stripping(openai_key):
     """
-    Test get_file_content_response raises LLMContentFormatError if stripping results in empty content.
+    Test get_file_content_response raises LLMContentFormatError if stripping
+    results in empty content.
     """
     mock_response = MagicMock()
-    # The block content is empty or just whitespace which should trigger the exception.
+    # The block content is empty or just whitespace which should trigger
+    # the exception.
     mock_response.choices[0].message.content = "```python\n\n```"
 
     with patch("openai.chat.completions.create", return_value=mock_response):
