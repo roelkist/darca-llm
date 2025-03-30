@@ -66,6 +66,9 @@ class BaseLLMClient(ABC):
             )
         cleaned = self._strip_markdown_prefix(file_content)
         return self.get_raw_response(system, cleaned, llm, temperature)
+    
+    #### VERKEERD GEIMPLEMTNEER. MOET RESPONSE FILTERE. NIET FILE MEEGEVEN ....!!!!!! FIXME
+    
 
     def _strip_markdown_prefix(self, text: str) -> str:
         """
