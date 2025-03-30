@@ -101,16 +101,20 @@ def test_file_content_response_valid(openai_key):
     Test valid response from get_file_content_response with a single valid block.
     """
     mock_response = MagicMock()
-    mock_response.choices[0].message.content = "```python\nprint('Hello World')\n```"
+    mock_response.choices[0].message.content = (
+        "```python\nprint('Hello World')\n```"
+    )
 
     with patch("openai.chat.completions.create", return_value=mock_response):
         client = OpenAIClient()
         user_prompt = "Provide the content of a simple Python file."
-        
+
         # Calling the refactored method
         result = client.get_file_content_response("sys", user_prompt)
-        
-        assert result == "print('Hello World')"  # Ensure markdown prefix is stripped
+
+        assert (
+            result == "print('Hello World')"
+        )  # Ensure markdown prefix is stripped
 
 
 def test_file_content_response_invalid(openai_key):
@@ -126,12 +130,13 @@ def test_file_content_response_invalid(openai_key):
     with patch("openai.chat.completions.create", return_value=mock_response):
         client = OpenAIClient()
         user_prompt = "Provide the content of two Python files."
-        
+
         # Ensure that an exception is raised for multiple blocks
         with pytest.raises(LLMContentFormatError) as e:
             client.get_file_content_response("sys", user_prompt)
-        
+
         assert "multiple" in str(e.value).lower()
+
 
 def test_strip_markdown_prefix_no_code_block(openai_key):
     """
@@ -144,6 +149,7 @@ def test_strip_markdown_prefix_no_code_block(openai_key):
 
     # It should return the original text since no code block markers were detected.
     assert result == text_without_code_block
+
 
 def test_file_content_response_empty_after_stripping(openai_key):
     """
@@ -159,7 +165,7 @@ def test_file_content_response_empty_after_stripping(openai_key):
 
         with pytest.raises(LLMContentFormatError) as e:
             client.get_file_content_response("sys", user_prompt)
-        
+
         assert "stripped" in str(e.value).lower()
 
 
