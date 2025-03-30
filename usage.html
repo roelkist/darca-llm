@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Usage &mdash; DARCA&#39;s LLM Client for handling chat reponses with support for different clients and models. 0.1.0 documentation</title>
+  <title>Usage &mdash; DARCA&#39;s LLM Client for handling chat reponses with support for different clients and models. 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -48,6 +48,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#basic-example">Basic Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#backends">Backends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#file-content-prompting">File Content Prompting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#helper-functions">Helper Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-block-handling">Code Block Handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#error-handling">Error Handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logging">Logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-integration">Command Line Integration</a></li>
@@ -115,19 +117,39 @@
 <section id="file-content-prompting">
 <h2>File Content Prompting<a class="headerlink" href="#file-content-prompting" title="Link to this heading"></a></h2>
 <p><cite>darca-llm</cite> supports file-style content passed directly to the model.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">file_data</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;&quot;&quot;&quot;python</span>
-<span class="s1">def hello():</span>
-<span class="s1">    print(&quot;Hello!&quot;)</span>
-<span class="s1">&quot;&quot;&quot;&#39;&#39;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">user_prompt</span> <span class="o">=</span> <span class="s2">&quot;Provide the content of a simple Python file.&quot;</span>
 
 <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_file_content_response</span><span class="p">(</span>
     <span class="n">system</span><span class="o">=</span><span class="s2">&quot;Explain the code.&quot;</span><span class="p">,</span>
-    <span class="n">file_content</span><span class="o">=</span><span class="n">file_data</span>
+    <span class="n">user</span><span class="o">=</span><span class="n">user_prompt</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>This strips markdown/code block formatting and ensures only one code block is included.</p>
-<p>Raises <cite>LLMContentFormatError</cite> if multiple blocks are detected.</p>
+<p>Raises <cite>LLMContentFormatError</cite> if:
+- Multiple code blocks are detected within the response.
+- The response cannot be properly stripped of markdown/code block formatting.</p>
+<p>—</p>
+</section>
+<section id="helper-functions">
+<h2>Helper Functions<a class="headerlink" href="#helper-functions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><cite>_has_single_block</cite>: Ensures only a single markdown/code block is present in the response.</p></li>
+<li><p><cite>_strip_markdown_prefix</cite>: Strips the code block formatting from valid responses.</p></li>
+</ul>
+<p>These functions are internally used by <cite>get_file_content_response()</cite> to validate and clean responses.</p>
+<p>—</p>
+</section>
+<section id="code-block-handling">
+<h2>Code Block Handling<a class="headerlink" href="#code-block-handling" title="Link to this heading"></a></h2>
+<p>The <cite>get_file_content_response</cite> method expects responses to be wrapped in code blocks as follows:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>```python
+def hello():
+    print(&quot;Hello World&quot;)
+```
+</pre></div>
+</div>
+<p>It strips the block formatting and returns only the content. If the response is improperly formatted or contains multiple blocks, an exception is raised.</p>
 <p>—</p>
 </section>
 <section id="error-handling">

@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>darca_llm.llm &mdash; DARCA&#39;s LLM Client for handling chat reponses with support for different clients and models. 0.1.0 documentation</title>
+  <title>darca_llm.llm &mdash; DARCA&#39;s LLM Client for handling chat reponses with support for different clients and models. 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/documentation_options.js?v=938c9ccc"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -84,28 +84,50 @@
 <div class="viewcode-block" id="LLMException">
 <a class="viewcode-back" href="../../api.html#darca_llm.LLMException">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LLMException</span><span class="p">(</span><span class="n">DarcaException</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all darca-llm exceptions.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all darca-llm exceptions.</span>
+
+<span class="sd">    Inherits from :class:`DarcaException`.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="LLMAPIKeyMissing">
 <a class="viewcode-back" href="../../api.html#darca_llm.LLMAPIKeyMissing">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LLMAPIKeyMissing</span><span class="p">(</span><span class="n">LLMException</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the API key is missing for the selected LLM provider.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the API key is missing for the selected LLM provider.</span>
+
+<span class="sd">    This exception indicates that the environment variable for the API key</span>
+<span class="sd">    (e.g., ``OPENAI_API_KEY``) is not set, preventing the LLM from being used.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="LLMResponseError">
 <a class="viewcode-back" href="../../api.html#darca_llm.LLMResponseError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LLMResponseError</span><span class="p">(</span><span class="n">LLMException</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when an LLM API request fails or returns malformed data.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when an LLM API request fails or returns malformed data.</span>
+
+<span class="sd">    This exception can be raised due to API connectivity issues, invalid</span>
+<span class="sd">    responses, or unexpected errors from the LLM provider.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="LLMContentFormatError">
 <a class="viewcode-back" href="../../api.html#darca_llm.LLMContentFormatError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LLMContentFormatError</span><span class="p">(</span><span class="n">LLMException</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the input content contains multiple code blocks.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the input content contains multiple code blocks or</span>
+<span class="sd">    when the response cannot be properly stripped of Markdown/code block</span>
+<span class="sd">    formatting.</span>
+
+<span class="sd">    This exception is specifically tailored to ensure that the LLM response</span>
+<span class="sd">    includes exactly one code block and that the format matches the expected</span>
+<span class="sd">    structure.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
@@ -118,8 +140,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for LLM backends. Provides shared logic for file</span>
 <span class="sd">    content processing.</span>
+
+<span class="sd">    Concrete implementations must implement the :meth:`get_raw_response`</span>
+<span class="sd">    method, which handles sending prompts to the respective LLM.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="BaseLLMClient.get_raw_response">
+<a class="viewcode-back" href="../../api.html#darca_llm.BaseLLMClient.get_raw_response">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_raw_response</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -129,44 +156,132 @@
         <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Send a raw prompt (system + user) to the LLM and return the response.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+<span class="sd">        Send a raw prompt (consisting of a system message and a user message)</span>
+<span class="sd">        to the LLM and return the string response.</span>
 
+<span class="sd">        :param system: The system-level instructions or context for the LLM.</span>
+<span class="sd">        :type system: str</span>
+<span class="sd">        :param user: The user-level query or request for the LLM.</span>
+<span class="sd">        :type user: str</span>
+<span class="sd">        :param llm: The identifier for the LLM model to use (e.g., ``gpt-4``).</span>
+<span class="sd">        :type llm: str</span>
+<span class="sd">        :param temperature: The sampling temperature for the LLM, controlling</span>
+<span class="sd">            creativity in the response.</span>
+<span class="sd">        :type temperature: float</span>
+<span class="sd">        :return: The raw response text returned by the LLM.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises LLMResponseError: If the LLM request fails or returns an</span>
+<span class="sd">                                  invalid response.</span>
+<span class="sd">        :raises LLMAPIKeyMissing: If the required API key is not set in</span>
+<span class="sd">                                  the environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BaseLLMClient.get_file_content_response">
+<a class="viewcode-back" href="../../api.html#darca_llm.BaseLLMClient.get_file_content_response">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_file_content_response</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">system</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">file_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">llm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gpt-4&quot;</span><span class="p">,</span>
         <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Process a prompt that includes the content of a single file.</span>
-<span class="sd">        Cleans markdown/code formatting and ensures only one block is present.</span>
+<span class="sd">        Process a prompt to return the content of a single file.</span>
+
+<span class="sd">        This method:</span>
+
+<span class="sd">        1. Sends the prompt to the LLM via :meth:`get_raw_response`.</span>
+<span class="sd">        2. Verifies that the returned response contains exactly one code block.</span>
+<span class="sd">        3. Strips any Markdown or code block formatting from the response.</span>
+
+<span class="sd">        :param system: The system message for the LLM.</span>
+<span class="sd">        :type system: str</span>
+<span class="sd">        :param user: The user query or request for the LLM, typically</span>
+<span class="sd">                     referencing a file content request.</span>
+<span class="sd">        :type user: str</span>
+<span class="sd">        :param llm: The identifier for the LLM model to use</span>
+<span class="sd">                    (e.g., ``gpt-4``).</span>
+<span class="sd">        :type llm: str</span>
+<span class="sd">        :param temperature: The sampling temperature for the LLM, controlling</span>
+<span class="sd">            creativity in the response.</span>
+<span class="sd">        :type temperature: float</span>
+<span class="sd">        :return: Cleaned-up text containing the single file content.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises LLMContentFormatError: If the response has multiple</span>
+<span class="sd">            code blocks, or if it cannot be properly stripped of</span>
+<span class="sd">            Markdown/code formatting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_single_block</span><span class="p">(</span><span class="n">file_content</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_raw_response</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_single_block</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">LLMContentFormatError</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Expected a single file block, but found multiple.&quot;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">&quot;Expected a single file block in the response, &quot;</span>
+                    <span class="s2">&quot;but found multiple.&quot;</span>
+                <span class="p">),</span>
                 <span class="n">error_code</span><span class="o">=</span><span class="s2">&quot;LLM_CONTENT_MULTIBLOCK&quot;</span><span class="p">,</span>
-                <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;content_preview&quot;</span><span class="p">:</span> <span class="n">file_content</span><span class="p">[:</span><span class="mi">100</span><span class="p">]},</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;response_preview&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">[:</span><span class="mi">100</span><span class="p">]},</span>
             <span class="p">)</span>
-        <span class="n">cleaned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strip_markdown_prefix</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_raw_response</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">cleaned</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span>
+
+        <span class="n">cleaned_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strip_markdown_prefix</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cleaned_response</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">LLMContentFormatError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">&quot;The response could not be properly stripped of &quot;</span>
+                    <span class="s2">&quot;markdown/code block formatting.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">error_code</span><span class="o">=</span><span class="s2">&quot;LLM_CONTENT_STRIP_ERROR&quot;</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;response_preview&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">[:</span><span class="mi">100</span><span class="p">]},</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cleaned_response</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_strip_markdown_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Strip markdown/code block prefix such as &#39;&#39;&#39;yaml or ```python.</span>
+<span class="sd">        Strip Markdown or code block prefix and suffix</span>
+<span class="sd">        (e.g., `````python ... ```).</span>
+
+<span class="sd">        This method uses a regular expression to detect code blocks</span>
+<span class="sd">        delimited by</span>
+<span class="sd">        triple backticks. If a match is found, it returns only the</span>
+<span class="sd">        content within</span>
+<span class="sd">        the code block, otherwise returns the original text stripped of</span>
+<span class="sd">        leading/trailing whitespace.</span>
+
+<span class="sd">        :param text: The text potentially containing Markdown or code</span>
+<span class="sd">          block formatting.</span>
+<span class="sd">        :type text: str</span>
+<span class="sd">        :return: The stripped text without the code block delimiters.</span>
+<span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^(?:(</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">|```)[a-zA-Z]+\s*)&quot;</span>
-        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^```(?:[\w+-]*)\n([\s\S]*?)\n```$&quot;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span>
+                <span class="mi">1</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>  <span class="c1"># Return only the content within the block</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="p">)</span>  <span class="c1"># Return the original text if it doesn&#39;t match the pattern</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_has_single_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Ensure content includes only a single markdown/code block.</span>
+<span class="sd">        Check if the text contains exactly one Markdown/code block.</span>
+
+<span class="sd">        :param text: The text that may contain zero, one, or multiple</span>
+<span class="sd">          code blocks.</span>
+<span class="sd">        :type text: str</span>
+<span class="sd">        :return: True if there is exactly one code block in the text,</span>
+<span class="sd">          False otherwise.</span>
+<span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">triple_quote_blocks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;&quot;&quot;[a-zA-Z]*&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
-        <span class="n">triple_backtick_blocks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;```[a-zA-Z]*&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">triple_quote_blocks</span> <span class="o">+</span> <span class="n">triple_backtick_blocks</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span></div>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;```(?:[\w+-]*)\n[\s\S]*?\n```&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span></div>
 
 
 
@@ -178,9 +293,19 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">OpenAIClient</span><span class="p">(</span><span class="n">BaseLLMClient</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LLM backend that uses OpenAI&#39;s GPT models via their official API.</span>
+
+<span class="sd">    This class implements the :class:`BaseLLMClient` interface, utilizing</span>
+<span class="sd">    the OpenAI Python client library to make requests to GPT models</span>
+<span class="sd">    (e.g., ``gpt-4``, ``gpt-3.5-turbo``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the OpenAI client.</span>
+
+<span class="sd">        :raises LLMAPIKeyMissing: If the ``OPENAI_API_KEY`` environment</span>
+<span class="sd">          variable is not set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">DarcaLogger</span><span class="p">(</span><span class="s2">&quot;darca-llm&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
@@ -191,6 +316,8 @@
             <span class="p">)</span>
         <span class="n">openai</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
 
+<div class="viewcode-block" id="OpenAIClient.get_raw_response">
+<a class="viewcode-back" href="../../api.html#darca_llm.OpenAIClient.get_raw_response">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_raw_response</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">system</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -199,7 +326,23 @@
         <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Send system + user prompt to OpenAI and return the chat response.</span>
+<span class="sd">        Send a system and user prompt to OpenAI and return the chat response.</span>
+
+<span class="sd">        :param system: The system message providing context or instructions</span>
+<span class="sd">          to the LLM.</span>
+<span class="sd">        :type system: str</span>
+<span class="sd">        :param user: The user message, typically containing the main query.</span>
+<span class="sd">        :type user: str</span>
+<span class="sd">        :param llm: The identifier of the OpenAI model to</span>
+<span class="sd">          use (e.g., ``gpt-4``).</span>
+<span class="sd">        :type llm: str</span>
+<span class="sd">        :param temperature: Sampling temperature for the request to control</span>
+<span class="sd">          response randomness.</span>
+<span class="sd">        :type temperature: float</span>
+<span class="sd">        :return: The text content of the LLM response.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises LLMResponseError: If the API request fails or the response</span>
+<span class="sd">          cannot be parsed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">system</span><span class="p">},</span>
@@ -234,6 +377,7 @@
                 <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">llm</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">},</span>
                 <span class="n">cause</span><span class="o">=</span><span class="n">e</span><span class="p">,</span>
             <span class="p">)</span></div>
+</div>
 
 
 
@@ -245,13 +389,20 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">AIClient</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A unified client for interacting with LLMs using the darca pluggable</span>
-<span class="sd">    backend system.</span>
-<span class="sd">    Defaults to OpenAI.</span>
+<span class="sd">    backend system. Defaults to the OpenAI backend.</span>
+
+<span class="sd">    This class acts as a simple wrapper, delegating all method calls</span>
+<span class="sd">    to the selected backend. Currently, only ``openai`` is supported.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;openai&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the AIClient with the given backend.</span>
+
+<span class="sd">        :param backend: The chosen LLM backend. Currently only ``openai``</span>
+<span class="sd">          is supported.</span>
+<span class="sd">        :type backend: str</span>
+<span class="sd">        :raises LLMException: If the requested backend is not supported.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;openai&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
@@ -264,7 +415,14 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Delegate calls to the selected backend client.</span>
+<span class="sd">        Delegate attribute or method calls to the selected backend client.</span>
+
+<span class="sd">        If this client does not have the attribute or method, it is fetched</span>
+<span class="sd">        from the underlying backend (e.g., :class:`OpenAIClient`).</span>
+
+<span class="sd">        :param name: The name of the attribute or method to be accessed.</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :return: The attribute or method from the underlying backend client.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
 

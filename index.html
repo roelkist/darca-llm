@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to darca-space-git’s documentation! &mdash; DARCA&#39;s LLM Client for handling chat reponses with support for different clients and models. 0.1.0 documentation</title>
+  <title>Welcome to darca-space-git’s documentation! &mdash; DARCA&#39;s LLM Client for handling chat reponses with support for different clients and models. 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -92,7 +92,7 @@
 <li><p>🧱 Extensible abstract interface (<cite>BaseLLMClient</cite>) for new providers</p></li>
 <li><p>🧪 Full pytest support with 100% coverage</p></li>
 <li><p>📦 Rich exception handling with structured <cite>DarcaException</cite></p></li>
-<li><p>📋 Markdown-aware content formatting</p></li>
+<li><p>📋 Markdown-aware content formatting using <cite>_strip_markdown_prefix</cite></p></li>
 <li><p>🧠 Logging support via <cite>darca-log-facility</cite></p></li>
 </ul>
 <p>—</p>
@@ -132,6 +132,47 @@
 </div>
 <p>—</p>
 </section>
+<section id="using-get-file-content-response">
+<h2>Using <cite>get_file_content_response</cite><a class="headerlink" href="#using-get-file-content-response" title="Link to this heading"></a></h2>
+<p>The <cite>get_file_content_response()</cite> method allows for structured file content prompting with LLMs.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">darca_llm</span><span class="w"> </span><span class="kn">import</span> <span class="n">AIClient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">AIClient</span><span class="p">()</span>
+
+<span class="n">user_prompt</span> <span class="o">=</span> <span class="s2">&quot;Provide the content of a simple Python file.&quot;</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_file_content_response</span><span class="p">(</span>
+    <span class="n">system</span><span class="o">=</span><span class="s2">&quot;Explain the code.&quot;</span><span class="p">,</span>
+    <span class="n">user</span><span class="o">=</span><span class="n">user_prompt</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This method ensures that only a single code block is returned and properly stripped of formatting using <cite>_strip_markdown_prefix()</cite>.</p>
+<p>—</p>
+</section>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h2>
+<p>All exceptions are subclasses of <cite>DarcaException</cite> and include:</p>
+<ul class="simple">
+<li><p><cite>LLMException</cite>: Base for all LLM-specific errors</p></li>
+<li><p><cite>LLMAPIKeyMissing</cite>: Raised when the API key is missing for the selected backend</p></li>
+<li><p><cite>LLMContentFormatError</cite>: Raised when:
+- Multiple blocks are detected within the response
+- The response cannot be properly stripped of markdown/code block formatting</p></li>
+<li><p><cite>LLMResponseError</cite>: Raised when the LLM provider returns an error or response parsing fails</p></li>
+</ul>
+<p>All exceptions include:</p>
+<ul class="simple">
+<li><p><cite>error_code</cite></p></li>
+<li><p><cite>message</cite></p></li>
+<li><p>Optional <cite>metadata</cite></p></li>
+<li><p>Optional <cite>cause</cite></p></li>
+<li><p>Full stack trace logging</p></li>
+</ul>
+<p>—</p>
+</section>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
 <p>Build and view the docs:</p>
@@ -142,6 +183,7 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docs</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">html</span><span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">html</span>
 </pre></div>
 </div>
+<p>For detailed usage, refer to the <cite>usage.rst</cite> documentation.</p>
 <p>—</p>
 </section>
 <section id="getting-started">
@@ -153,6 +195,8 @@
 <li class="toctree-l2"><a class="reference internal" href="usage.html#basic-example">Basic Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#backends">Backends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#file-content-prompting">File Content Prompting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#helper-functions">Helper Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#code-block-handling">Code Block Handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#error-handling">Error Handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#logging">Logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#command-line-integration">Command Line Integration</a></li>

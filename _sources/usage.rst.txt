@@ -45,19 +45,44 @@ File Content Prompting
 
 .. code-block:: python
 
-    file_data = '''"""python
-    def hello():
-        print("Hello!")
-    """'''
+    user_prompt = "Provide the content of a simple Python file."
 
     result = client.get_file_content_response(
         system="Explain the code.",
-        file_content=file_data
+        user=user_prompt
     )
 
 This strips markdown/code block formatting and ensures only one code block is included.
 
-Raises `LLMContentFormatError` if multiple blocks are detected.
+Raises `LLMContentFormatError` if:
+- Multiple code blocks are detected within the response.
+- The response cannot be properly stripped of markdown/code block formatting.
+
+---
+
+Helper Functions
+----------------
+
+- `_has_single_block`: Ensures only a single markdown/code block is present in the response.
+- `_strip_markdown_prefix`: Strips the code block formatting from valid responses.
+
+These functions are internally used by `get_file_content_response()` to validate and clean responses.
+
+---
+
+Code Block Handling
+-------------------
+
+The `get_file_content_response` method expects responses to be wrapped in code blocks as follows:
+
+.. code-block:: text
+
+    ```python
+    def hello():
+        print("Hello World")
+    ```
+
+It strips the block formatting and returns only the content. If the response is improperly formatted or contains multiple blocks, an exception is raised.
 
 ---
 

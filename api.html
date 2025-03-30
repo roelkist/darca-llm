@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; DARCA&#39;s LLM Client for handling chat reponses with support for different clients and models. 0.1.0 documentation</title>
+  <title>API Reference &mdash; DARCA&#39;s LLM Client for handling chat reponses with support for different clients and models. 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -46,22 +46,29 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#aiclient">AIClient</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#darca_llm.AIClient"><code class="docutils literal notranslate"><span class="pre">AIClient()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#darca_llm.AIClient"><code class="docutils literal notranslate"><span class="pre">AIClient</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#openaiclient">OpenAIClient</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#darca_llm.OpenAIClient"><code class="docutils literal notranslate"><span class="pre">OpenAIClient()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#darca_llm.OpenAIClient"><code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#darca_llm.OpenAIClient.get_raw_response"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.get_raw_response()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#basellmclient">BaseLLMClient</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#darca_llm.BaseLLMClient"><code class="docutils literal notranslate"><span class="pre">BaseLLMClient()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#darca_llm.BaseLLMClient"><code class="docutils literal notranslate"><span class="pre">BaseLLMClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#darca_llm.BaseLLMClient.get_file_content_response"><code class="docutils literal notranslate"><span class="pre">BaseLLMClient.get_file_content_response()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#darca_llm.BaseLLMClient.get_raw_response"><code class="docutils literal notranslate"><span class="pre">BaseLLMClient.get_raw_response()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#darca_llm.LLMException"><code class="docutils literal notranslate"><span class="pre">LLMException()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#darca_llm.LLMAPIKeyMissing"><code class="docutils literal notranslate"><span class="pre">LLMAPIKeyMissing()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#darca_llm.LLMContentFormatError"><code class="docutils literal notranslate"><span class="pre">LLMContentFormatError()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#darca_llm.LLMResponseError"><code class="docutils literal notranslate"><span class="pre">LLMResponseError()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#darca_llm.LLMException"><code class="docutils literal notranslate"><span class="pre">LLMException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#darca_llm.LLMAPIKeyMissing"><code class="docutils literal notranslate"><span class="pre">LLMAPIKeyMissing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#darca_llm.LLMContentFormatError"><code class="docutils literal notranslate"><span class="pre">LLMContentFormatError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#darca_llm.LLMResponseError"><code class="docutils literal notranslate"><span class="pre">LLMResponseError</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -98,19 +105,21 @@
 <p>—</p>
 <section id="aiclient">
 <h2>AIClient<a class="headerlink" href="#aiclient" title="Link to this heading"></a></h2>
-<dl class="py function">
+<dl class="py class">
 <dt class="sig sig-object py" id="darca_llm.AIClient">
-<span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">AIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'openai'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#AIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.AIClient" title="Link to this definition"></a></dt>
-<dd><p>A unified client for interacting with LLMs using the darca pluggable
-backend system.
-Defaults to OpenAI.</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">AIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'openai'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#AIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.AIClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A unified client for interacting with LLMs using the darca pluggable
+backend system. Defaults to the OpenAI backend.</p>
+<p>This class acts as a simple wrapper, delegating all method calls
+to the selected backend. Currently, only <code class="docutils literal notranslate"><span class="pre">openai</span></code> is supported.</p>
 <p>Unified interface to interact with LLMs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>backend</strong> – The backend to use (default: “openai”)</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>LLMException</strong> – If the backend is unsupported</p>
+<dd class="field-even"><p><a class="reference internal" href="#darca_llm.LLMException" title="darca_llm.LLMException"><strong>LLMException</strong></a> – If the backend is unsupported</p>
 </dd>
 </dl>
 </dd></dl>
@@ -119,59 +128,177 @@ Defaults to OpenAI.</p>
 </section>
 <section id="openaiclient">
 <h2>OpenAIClient<a class="headerlink" href="#openaiclient" title="Link to this heading"></a></h2>
-<dl class="py function">
+<dl class="py class">
 <dt class="sig sig-object py" id="darca_llm.OpenAIClient">
-<span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">OpenAIClient</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#OpenAIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.OpenAIClient" title="Link to this definition"></a></dt>
-<dd><p>LLM backend that uses OpenAI’s GPT models via their official API.</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">OpenAIClient</span></span><a class="reference internal" href="_modules/darca_llm/llm.html#OpenAIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.OpenAIClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#darca_llm.BaseLLMClient" title="darca_llm.llm.BaseLLMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLLMClient</span></code></a></p>
+<p>LLM backend that uses OpenAI’s GPT models via their official API.</p>
+<p>This class implements the <a class="reference internal" href="#darca_llm.BaseLLMClient" title="darca_llm.BaseLLMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLLMClient</span></code></a> interface, utilizing
+the OpenAI Python client library to make requests to GPT models
+(e.g., <code class="docutils literal notranslate"><span class="pre">gpt-4</span></code>, <code class="docutils literal notranslate"><span class="pre">gpt-3.5-turbo</span></code>).</p>
 <p>Handles direct interaction with OpenAI’s API.
-Inherits from <cite>BaseLLMClient</cite>.</p>
+Inherits from <a class="reference internal" href="#darca_llm.BaseLLMClient" title="darca_llm.BaseLLMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLLMClient</span></code></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="darca_llm.OpenAIClient.get_raw_response">
+<span class="sig-name descname"><span class="pre">get_raw_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'gpt-4'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/darca_llm/llm.html#OpenAIClient.get_raw_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.OpenAIClient.get_raw_response" title="Link to this definition"></a></dt>
+<dd><p>Send a system and user prompt to OpenAI and return the chat response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>system</strong> (<em>str</em>) – The system message providing context or instructions
+to the LLM.</p></li>
+<li><p><strong>user</strong> (<em>str</em>) – The user message, typically containing the main query.</p></li>
+<li><p><strong>llm</strong> (<em>str</em>) – The identifier of the OpenAI model to
+use (e.g., <code class="docutils literal notranslate"><span class="pre">gpt-4</span></code>).</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – Sampling temperature for the request to control
+response randomness.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The text content of the LLM response.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#darca_llm.LLMResponseError" title="darca_llm.LLMResponseError"><strong>LLMResponseError</strong></a> – If the API request fails or the response
+cannot be parsed.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <p>—</p>
 </section>
 <section id="basellmclient">
 <h2>BaseLLMClient<a class="headerlink" href="#basellmclient" title="Link to this heading"></a></h2>
-<dl class="py function">
+<dl class="py class">
 <dt class="sig sig-object py" id="darca_llm.BaseLLMClient">
-<span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">BaseLLMClient</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#BaseLLMClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.BaseLLMClient" title="Link to this definition"></a></dt>
-<dd><p>Abstract base class for LLM backends. Provides shared logic for file
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">BaseLLMClient</span></span><a class="reference internal" href="_modules/darca_llm/llm.html#BaseLLMClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.BaseLLMClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract base class for LLM backends. Provides shared logic for file
 content processing.</p>
+<p>Concrete implementations must implement the <a class="reference internal" href="#darca_llm.BaseLLMClient.get_raw_response" title="darca_llm.BaseLLMClient.get_raw_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_raw_response()</span></code></a>
+method, which handles sending prompts to the respective LLM.</p>
 <p>Abstract base class for all LLM clients.</p>
 <dl class="simple">
 <dt>Methods:</dt><dd><ul class="simple">
-<li><p><cite>get_raw_response(system, user, …)</cite></p></li>
-<li><p><cite>get_file_content_response(system, file_content, …)</cite></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_raw_response(system,</span> <span class="pre">user,</span> <span class="pre">...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_file_content_response(system,</span> <span class="pre">file_content,</span> <span class="pre">...)</span></code></p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="darca_llm.BaseLLMClient.get_file_content_response">
+<span class="sig-name descname"><span class="pre">get_file_content_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'gpt-4'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/darca_llm/llm.html#BaseLLMClient.get_file_content_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.BaseLLMClient.get_file_content_response" title="Link to this definition"></a></dt>
+<dd><p>Process a prompt to return the content of a single file.</p>
+<p>This method:</p>
+<ol class="arabic simple">
+<li><p>Sends the prompt to the LLM via <a class="reference internal" href="#darca_llm.BaseLLMClient.get_raw_response" title="darca_llm.BaseLLMClient.get_raw_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_raw_response()</span></code></a>.</p></li>
+<li><p>Verifies that the returned response contains exactly one code block.</p></li>
+<li><p>Strips any Markdown or code block formatting from the response.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>system</strong> (<em>str</em>) – The system message for the LLM.</p></li>
+<li><p><strong>user</strong> (<em>str</em>) – The user query or request for the LLM, typically
+referencing a file content request.</p></li>
+<li><p><strong>llm</strong> (<em>str</em>) – The identifier for the LLM model to use
+(e.g., <code class="docutils literal notranslate"><span class="pre">gpt-4</span></code>).</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – The sampling temperature for the LLM, controlling
+creativity in the response.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cleaned-up text containing the single file content.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#darca_llm.LLMContentFormatError" title="darca_llm.LLMContentFormatError"><strong>LLMContentFormatError</strong></a> – If the response has multiple
+code blocks, or if it cannot be properly stripped of
+Markdown/code formatting.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="darca_llm.BaseLLMClient.get_raw_response">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_raw_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'gpt-4'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/darca_llm/llm.html#BaseLLMClient.get_raw_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.BaseLLMClient.get_raw_response" title="Link to this definition"></a></dt>
+<dd><p>Send a raw prompt (consisting of a system message and a user message)
+to the LLM and return the string response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>system</strong> (<em>str</em>) – The system-level instructions or context for the LLM.</p></li>
+<li><p><strong>user</strong> (<em>str</em>) – The user-level query or request for the LLM.</p></li>
+<li><p><strong>llm</strong> (<em>str</em>) – The identifier for the LLM model to use (e.g., <code class="docutils literal notranslate"><span class="pre">gpt-4</span></code>).</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – The sampling temperature for the LLM, controlling
+creativity in the response.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The raw response text returned by the LLM.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#darca_llm.LLMResponseError" title="darca_llm.LLMResponseError"><strong>LLMResponseError</strong></a> – If the LLM request fails or returns an
+invalid response.</p></li>
+<li><p><a class="reference internal" href="#darca_llm.LLMAPIKeyMissing" title="darca_llm.LLMAPIKeyMissing"><strong>LLMAPIKeyMissing</strong></a> – If the required API key is not set in
+the environment.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <p>—</p>
 </section>
 <section id="exceptions">
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading"></a></h2>
-<dl class="py function">
+<dl class="py class">
 <dt class="sig sig-object py" id="darca_llm.LLMException">
-<span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">LLMException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cause</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#LLMException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.LLMException" title="Link to this definition"></a></dt>
-<dd><p>Base class for all darca-llm exceptions.</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">LLMException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cause</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#LLMException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.LLMException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DarcaException</span></code></p>
+<p>Base class for all darca-llm exceptions.</p>
+<p>Inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">DarcaException</span></code>.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="py class">
 <dt class="sig sig-object py" id="darca_llm.LLMAPIKeyMissing">
-<span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">LLMAPIKeyMissing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cause</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#LLMAPIKeyMissing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.LLMAPIKeyMissing" title="Link to this definition"></a></dt>
-<dd><p>Raised when the API key is missing for the selected LLM provider.</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">LLMAPIKeyMissing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cause</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#LLMAPIKeyMissing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.LLMAPIKeyMissing" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#darca_llm.LLMException" title="darca_llm.llm.LLMException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMException</span></code></a></p>
+<p>Raised when the API key is missing for the selected LLM provider.</p>
+<p>This exception indicates that the environment variable for the API key
+(e.g., <code class="docutils literal notranslate"><span class="pre">OPENAI_API_KEY</span></code>) is not set, preventing the LLM from being used.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="py class">
 <dt class="sig sig-object py" id="darca_llm.LLMContentFormatError">
-<span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">LLMContentFormatError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cause</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#LLMContentFormatError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.LLMContentFormatError" title="Link to this definition"></a></dt>
-<dd><p>Raised when the input content contains multiple code blocks.</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">LLMContentFormatError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cause</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#LLMContentFormatError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.LLMContentFormatError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#darca_llm.LLMException" title="darca_llm.llm.LLMException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMException</span></code></a></p>
+<p>Raised when the input content contains multiple code blocks or
+when the response cannot be properly stripped of Markdown/code block
+formatting.</p>
+<p>This exception is specifically tailored to ensure that the LLM response
+includes exactly one code block and that the format matches the expected
+structure.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="py class">
 <dt class="sig sig-object py" id="darca_llm.LLMResponseError">
-<span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">LLMResponseError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cause</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#LLMResponseError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.LLMResponseError" title="Link to this definition"></a></dt>
-<dd><p>Raised when an LLM API request fails or returns malformed data.</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">darca_llm.</span></span><span class="sig-name descname"><span class="pre">LLMResponseError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cause</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/darca_llm/llm.html#LLMResponseError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#darca_llm.LLMResponseError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#darca_llm.LLMException" title="darca_llm.llm.LLMException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMException</span></code></a></p>
+<p>Raised when an LLM API request fails or returns malformed data.</p>
+<p>This exception can be raised due to API connectivity issues, invalid
+responses, or unexpected errors from the LLM provider.</p>
 </dd></dl>
 
 </section>
